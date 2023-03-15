@@ -1,0 +1,36 @@
+{%- form 'product', upsellItem, id: upsell_form, class: 'form', novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+    <input
+      type="hidden"
+      name="id"
+      value="{{ upsellItem.selected_or_first_available_variant.id }}"
+      disabled
+    >
+    <button
+      type="submit"
+      name="add"
+      class="upsell-form__submit button button--full-width {% if block.settings.show_dynamic_checkout %}button--secondary{% else %}button--primary{% endif %}"
+      {% if upsellItem.selected_or_first_available_variant.available == false %}
+        disabled
+      {% endif %}
+    >
+      <span>
+        {%- if upsellItem.selected_or_first_available_variant.available -%}
+          + Add
+        {%- else -%}
+          {{ 'products.product.sold_out' | t }}
+        {%- endif -%}
+      </span>
+      <div class="loading-overlay__spinner hidden">
+        <svg
+          aria-hidden="true"
+          focusable="false"
+          role="presentation"
+          class="spinner"
+          viewBox="0 0 66 66"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle class="path" fill="none" stroke-width="6" cx="33" cy="33" r="30"></circle>
+        </svg>
+      </div>
+    </button>
+  {%- endform -%}

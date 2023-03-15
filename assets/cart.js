@@ -25,6 +25,9 @@ class CartItems extends HTMLElement {
     }, 300);
 
     this.addEventListener('change', this.debouncedOnChange.bind(this));
+
+    this.addUpsell();
+    this.getCart();
   }
 
   onChange(event) {
@@ -149,6 +152,98 @@ class CartItems extends HTMLElement {
   disableLoading() {
     const mainCartItems = document.getElementById('main-cart-items') || document.getElementById('CartDrawer-CartItems');
     mainCartItems.classList.remove('cart__items--disabled');
+  }
+
+  addUpsell(){
+    const upsellATCBtns = document.querySelectorAll(".add__to__cart-uppsellBtn");
+    
+    for(let i=0; i<upsellATCBtns.length; i++){
+    
+      upsellATCBtns[i].addEventListener("click",(e)=>{
+        e.preventDefault();
+        upsellATCBtns[i].disabled = true;
+    
+        let formData = {
+          'items': [{
+           'id': upsellATCBtns[i].name,
+           'quantity': 1
+          }]
+        };
+         
+        fetch('/cart/add.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        })
+        .then(response => {
+          this.getSectionsToRender().forEach((section => {
+            const elementToReplace =
+              document.getElementById(section.id).querySelector(section.selector) || document.getElementById(section.id);
+            elementToReplace.innerHTML =
+              this.getSectionInnerHTML(parsedState.sections[section.section], section.selector);
+          }));    
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+        upsellATCBtns[i].disabled = false;
+         
+      })
+    }
+  }
+
+  getCart(){
+    fetch('/cart.js')
+    .then(response => {
+      let res = response.json();
+      return res;
+    })
+    .then((res) => {
+      let cart_items = [];
+      let new_upsell_items = []
+      for(let i=0; i< res.items.length;i++){
+        cart_items.push(res.items[i].variant_id)
+      }
+
+      let in_cart = false
+
+      for(let i=0; i< collections_list.length;i++){
+        for(let j=0; j < cart_items.length;j++){
+          if(collections_list[i].includes(cart_items[j])){
+            in_cart = true;
+          }
+        }
+      }
+
+      if(in_cart){
+        for(let i=0; i< upsell_items.length;i++){
+          if(cart_items.includes(upsell_items[i]) == false){
+            new_upsell_items.push(upsell_items[i])
+          }
+        }
+        this.renderUpsells(new_upsell_items);
+      }
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+  }
+
+  renderUpsells(new_upsell_items){
+    const upsellCards = document.querySelectorAll(".cart-item__upsell");
+    const new_upsellCards = []
+    for(let i=0; i < upsellCards.length;i++){
+      if(new_upsell_items.includes(parseInt(upsellCards[i].id))){
+        new_upsellCards.push(upsellCards[i])
+      }
+    }
+    for (let i = 0; i < 2; i++) {
+      if(new_upsell_items.length > 0){
+        new_upsellCards[i].classList.remove("hidden");
+      }
+    }
   }
 }
 
