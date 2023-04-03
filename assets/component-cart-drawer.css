@@ -117,6 +117,7 @@ cart-drawer:not(.is-empty) .cart-drawer__collection {
   background-color: rgb(var(--color-background));
   border-top: 0.1rem solid rgba(var(--color-foreground), 0.2);
   padding: 1.5rem 0;
+  width: 100%;
 }
 
 cart-drawer-items.is-empty + .drawer__footer {
@@ -382,4 +383,34 @@ cart-drawer-items::-webkit-scrollbar-thumb {
 
 cart-drawer-items::-webkit-scrollbar-track-piece {
   margin-top: 31px;
+}
+
+
+/* Upsell Cards styles  */
+
+.upsell__container{
+  overflow: auto;
+  max-height: 300px;
+}
+
+.cart-item__upsell{
+  background: #80808040;
+  margin-top: 20px;
+  padding: 10px;
+  display: flex;
+  gap: 20px;
+}
+.cart-item__media_upsell{
+  padding-top: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 10rem;
+}
+
+.cart-item__upsell .cart-item__details {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 10px;
 }

@@ -1,0 +1,172 @@
+
+{{ 'component-custom-facets.css' | asset_url | stylesheet_tag }}
+
+<script src="{{ 'custom-facets.js' | asset_url }}" defer="defer"></script>
+
+<div class="custom-facets__container">
+  <h3 class="custom-facet__title"> Custom Filters</h3>
+  <form class="custom-filter-form">
+
+    {% comment %} Active filters {% endcomment %}
+    {%- if collection.filters -%}
+      <div class="active-filters">
+        <div class="active-filters__remove-filter__container">
+          {%- for filter in collection.filters -%}
+            {%- if filter.type == "price_range" -%}
+              {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+                <a class="active-filters__remove-filter" href="{{ filter.url_to_remove }}">
+                  {%- assign min_value = filter.min_value.value | default: 0 -%}
+                  {%- assign max_value = filter.max_value.value | default: filter.range_max -%}
+                  {{ min_value | money }} - {{ max_value | money }} {% render 'icon-close-small' %}
+                </a>
+              {%- endif -%}
+            {%- else -%}
+              {%- for filter_value in filter.active_values -%}
+                <a class="active-filters__remove-filter" href="{{ filter_value.url_to_remove }}">
+                  {{ filter.label }}: {{ filter_value.label }} {% render 'icon-close-small' %}
+                </a>
+              {%- endfor -%}
+            {%- endif- %}
+          {%- endfor -%}
+
+          {% for curr_tag in current_tags %}
+            <div class="active-filters__remove-filter active-filters__remove-filter-custom" href="{{ filter_value.url_to_remove }}">
+              {% assign tag = curr_tag | split: '#' %}
+              {%- if tag.first == "filter" -%}
+                {% assign val = tag[1] | split: '_' %}
+                {{ tag[1] | split: '_' | first | capitalize }}: {{ val[1] | capitalize | link_to_remove_tag: curr_tag }} 
+              {%- else -%}
+                Tag: {{ tag.first | capitalize | link_to_remove_tag: curr_tag }}
+              {%- endif -%}
+              {% render 'icon-close-small' %}
+            </div>
+          {% endfor %}
+        </div>
+
+        <a href="{{ collection.url }}" class="active-filters__clear">Clear all</a>
+        
+      </div>
+    {%- endif -%}
+
+    {% comment %} Storefront filters {% endcomment %}
+    {%- for filter in collection.filters -%}
+      <details class="filter-group facets__disclosure-vertical">
+        <summary class="filter-group-summary facets__summary caption-large focus-offset">
+          <div>
+            {%- if filter.label == "More filters" -%}
+              <span>Tags</span>
+            {% elsif fitler.label == "Product type" %}
+              <span>Type</span>
+            {% elsif filter.label == "Product rating count" %}
+              <span>Ratings</span>
+            {% else %}
+              <span>{{ filter.label }}</span>
+            {%- endif -%}
+  
+            {%- if filter.active_values.size > 0 -%}
+              <span>({{ filter.active_values.size }})</span>
+            {%- endif -%}
+
+            {% render 'icon-caret' %}
+          </div>
+        </summary>
+  
+        <div class="filter-group-display">
+  
+          {%- case filter.type -%}
+            {%- when 'boolean' or 'list' -%}
+              <ul class="filter-group-display__list list-unstyled">
+                {%- for filter_value in filter.values -%}
+                  <li class="filter-group-display__list-item ">
+                    <label for="Filter-{{ filter.param_name }}-{{ forloop.index }}" class="filter-checkbox-input {% if filter_value.count == 0 and filter_value.active == false -%} disabled{%- endif %} ">
+                      <input type="checkbox"
+                        name="{{ filter_value.param_name }}"
+                        value="{{ filter_value.value }}"
+                        id="Filter-{{ filter.param_name }}-{{ forloop.index }}"
+                        {% if filter_value.active -%}checked{%- endif %}
+                        {% if filter_value.count == 0 and filter_value.active == false -%}disabled{%- endif %}
+                      >
+                      {%- if filter.label == "Product rating count" -%}
+                        {% render 'icon-star' %}
+                      {%- else -%}
+                        <span>{{ filter_value.label }} ({{ filter_value.count }})</span>
+                      {%- endif -%}
+                  </label>
+                  </li>
+                {%- endfor -%}
+              </ul>
+  
+              <div class="filter-group-display__submit">
+                <input type="submit" value="Apply" class="filter-submit-btn visually-hidden">
+              </div>
+            {%- when 'price_range' -%}
+              <div class="filter-group-display__price-range">
+                <div class="price-content">
+                  <div>
+                    <label>From</label>
+                    <div id="range-min-value">{{ filter.range_min | money_without_currency | replace: ',', '' }}</div>
+                  </div>
+          
+                  <div>
+                    <label>To</label>
+                    <div id="range-max-value">{{ filter.range_max | money_without_currency | replace: ',', '' }}</div>
+                  </div>
+                </div>
+          
+                <div class="range-slider">
+                  <input class="range-input-slider min-price"
+                    name="{{ filter.min_value.param_name }}"
+                    id="Filter-{{ filter.min_value.param_name }}"
+                    {% if filter.min_value.value -%}
+                      value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"
+                      {% else %}
+                      value="0"  
+                    {%- endif %} 
+                    type="range" 
+                    min="0" 
+                    max="{{ filter.range_max | money_without_currency | replace: ',', '' }}" 
+                    step="1"
+                  >
+
+                  <input 
+                    class="range-input-slider max-price"
+                    name="{{ filter.max_value.param_name }}"
+                    id="Filter-{{ filter.max_value.param_name }}"
+                    {% if filter.max_value.value -%}
+                      value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"
+                    {% else %}
+                      value="{{ filter.range_max | money_without_currency | replace: ',', '' }}" 
+                    {%- endif %} 
+                    type="range" 
+                    min="0" 
+                    max="{{ filter.range_max | money_without_currency | replace: ',', '' }}" 
+                    step="1"
+                  >
+                </div>
+              </div>
+  
+              <div class="filter-group-display__submit">
+                <input type="submit" value="Apply" class="filter-submit-btn visually-hidden">
+              </div>
+          {%- endcase -%}
+
+          {%- if filter.type != "price_range" -%}
+            <div class="filter-group-display__header">
+              <span class="filter-group-display__header-selected">{{ filter.active_values.size }} selected</span>
+    
+              {%- if filter.active_values.size > 0 -%}
+                <a href="{{ filter.url_to_remove }}" class="filter-group-display__header-reset">Reset</a>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+      </details>
+    {%- endfor -%}    
+
+    {% comment %} Tag based filters {% endcomment %}
+
+    {% render 'tag_based_filters', collection: collection %}
+    
+  </form>
+</div>
+

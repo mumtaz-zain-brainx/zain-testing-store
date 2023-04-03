@@ -1508,5 +1508,30 @@
         "info": "t:settings_schema.cart.settings.cart_drawer.collection.info"
       }
     ]
+  },
+  {
+    "name": "Upsell",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Collections on which upsell is applied"
+      },
+      {
+        "type": "collection_list",
+        "id": "upsell_collection_list",
+        "label": "Collections",
+        "limit": 2
+      },
+      {
+        "type": "header",
+        "content": "Products to display as the upsell"
+      },
+      {
+        "type": "product_list",
+        "id": "upsell_product_list",
+        "label": "Products",
+        "limit": 6
+      }
+    ]
   }
 ]

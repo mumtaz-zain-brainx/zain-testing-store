@@ -235,8 +235,25 @@
     }
     </script>
   </head>
-
+  
   <body class="gradient">
+    <script>
+      let upsell_items = []
+      let collections_list = []
+      {% for item in settings.upsell_product_list %}
+        upsell_items.push({{ item.selected_or_first_available_variant.id }});
+      {% endfor %}
+
+      let tempProds = []
+      {% for collectionItem in settings.upsell_collection_list %}
+        tempProds = []
+        {% for prod in collectionItem.products %}
+          tempProds.push({{ prod.selected_or_first_available_variant.id }})
+        {% endfor %}
+        collections_list.push(tempProds)
+      {% endfor %}
+    </script>
+
     <a class="skip-to-content-link button visually-hidden" href="#MainContent">
       {{ "accessibility.skip_to_text" | t }}
     </a>

@@ -1,0 +1,417 @@
+{% if collection.all_tags.size > 0 %}
+  {% comment %} Default Tags  {% endcomment %}
+  <details class="filter-group facets__disclosure-vertical" open>
+    <summary class="filter-group-summary facets__summary caption-large focus-offset">
+      <div>
+        {% assign active_tags_count = 0 %}
+        {%- for val in current_tags -%}
+            {% unless val contains 'filter' %}
+                {% assign active_tags_count = active_tags_count | plus: 1 %}
+            {% endunless %}
+
+        {%- endfor -%}
+        <span>Tags ({{ active_tags_count }})</span>
+        {% render 'icon-caret' %}
+      </div>
+    </summary>
+
+    <div class="filter-group-display">
+      <ul class="filter-group-display__list list-unstyled">
+        {% for val in collection.all_tags %}
+          {% assign tags = val | split: '#' %}
+          {%- if tags.first != 'filter' -%}
+            {% assign tag = tags | first %}
+            {% if current_tags contains tag %}
+              <li class="filter-group-display__list-item ">
+                <label for="Filter-tag-{{ forloop.index }}" class="filter-checkbox-input-tag">
+                  <input
+                    type="checkbox"
+                    name="{{ tag }}"
+                    value="{{ tag }}"
+                    id="Filter-tag-{{ forloop.index }}"
+                    {% if current_tags contains tag -%}
+                      checked
+                    {%- endif %}
+                  >
+                  {{ tag | capitalize | link_to_remove_tag: tag }}
+                </label>
+              </li>
+            {% else %}
+              <li class="filter-group-display__list-item ">
+                <label for="Filter-tag-{{ forloop.index }}" class="filter-checkbox-input-tag">
+                  <input
+                    type="checkbox"
+                    name="{{ tag }}"
+                    value="{{ tag }}"
+                    id="Filter-tag-{{ forloop.index }}"
+                  >
+                  {{ tag | capitalize | link_to_add_tag: tag }}
+                </label>
+              </li>
+            {% endif %}
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+    </div>
+  </details>
+
+  {% comment %} Assigning filter labels {% endcomment %}
+  {% assign filter_titles = '' %}
+  {% for val in collection.all_tags %}
+    {% assign filter_tags = val | split: '#' %}
+    {%- if filter_tags.first == 'filter' -%}
+      {% assign filter_label = filter_tags[1] | split: '_' | first %}
+      {%- unless filter_titles contains filter_label -%}
+        {% assign filter_titles = filter_titles | append: ',' | append: filter_label %}
+      {%- endunless -%}
+    {%- endif -%}
+  {% endfor %}
+  {% assign filter_titles = filter_titles | remove_first: ',' %}
+
+  {% comment %} Colors {% endcomment %}
+  {%- if filter_titles contains 'color' -%}
+    <details class="filter-group facets__disclosure-vertical" open>
+      <summary class="filter-group-summary facets__summary caption-large focus-offset">
+        <div>
+          {% assign active_color_tags_count = 0 %}
+          {%- for val in current_tags -%}
+              {% if val contains 'filter' and val contains "color" %}
+                {% assign active_color_tags_count = active_color_tags_count | plus: 1 %}
+              {% endif %}
+  
+          {%- endfor -%}
+          <span>Color (tags) ({{ active_color_tags_count }})</span>
+
+          {% render 'icon-caret' %}
+        </div>
+      </summary>
+
+      <div class="filter-group-display">
+        <ul class="filter-group-display__list list-unstyled">
+          {% for val in collection.all_tags %}
+            {% assign tags = val | split: '#' %}
+            {% if tags.first == 'filter' %}
+              {% assign tag_item = tags[1] | split: '_' %}
+              {%- if tag_item[0] == 'color' -%}
+                {% assign tag = tag_item[1] %}
+                {% if current_tags contains val %}
+                  <li class="filter-group-display__list-item ">
+                    <label for="Filter-tag-{{ forloop.index }}" class="filter-checkbox-input-tag">
+                      <input
+                        type="checkbox"
+                        name="{{ tag }}"
+                        value="{{ tag }}"
+                        id="Filter-tag-{{ forloop.index }}"
+                        {% if current_tags contains val -%}
+                          checked
+                        {%- endif %}
+                      >
+                      {{ tag | capitalize | link_to_remove_tag: val }}
+                    </label>
+                  </li>
+                {% else %}
+                  <li class="filter-group-display__list-item ">
+                    <label for="Filter-tag-{{ forloop.index }}" class="filter-checkbox-input-tag">
+                      <input
+                        type="checkbox"
+                        name="{{ tag }}"
+                        value="{{ tag }}"
+                        id="Filter-tag-{{ forloop.index }}"
+                      >
+                      {{ tag | capitalize | link_to_add_tag: val }}
+                    </label>
+                  </li>
+                {% endif %}
+              {%- endif -%}
+            {% endif %}
+          {%- endfor -%}
+        </ul>
+      </div>
+    </details>
+  {%- endif -%}
+
+  {% comment %} Sizes {% endcomment %}
+  {%- if filter_titles contains 'size' -%}
+    <details class="filter-group facets__disclosure-vertical" open>
+      <summary class="filter-group-summary facets__summary caption-large focus-offset">
+        <div>
+          {% assign active_size_tags_count = 0 %}
+          {%- for val in current_tags -%}
+              {% if val contains 'filter' and val contains "size" %}
+                {% assign active_size_tags_count = active_size_tags_count | plus: 1 %}
+              {% endif %}
+  
+          {%- endfor -%}
+          <span>Size (tags) ({{ active_size_tags_count }})</span>
+
+          {% render 'icon-caret' %}
+        </div>
+      </summary>
+
+      <div class="filter-group-display">
+        <ul class="filter-group-display__list list-unstyled">
+          {% for val in collection.all_tags %}
+            {% assign tags = val | split: '#' %}
+            {% if tags.first == 'filter' %}
+              {% assign tag_item = tags[1] | split: '_' %}
+              {%- if tag_item[0] == 'size' -%}
+                {% assign tag = tag_item[1] %}
+                {% if current_tags contains val %}
+                  <li class="filter-group-display__list-item ">
+                    <label for="Filter-tag-{{ forloop.index }}" class="filter-checkbox-input-tag">
+                      <input
+                        type="checkbox"
+                        name="{{ tag }}"
+                        value="{{ tag }}"
+                        id="Filter-tag-{{ forloop.index }}"
+                        {% if current_tags contains val -%}
+                          checked
+                        {%- endif %}
+                      >
+                      {{ tag | capitalize | link_to_remove_tag: val }}
+                    </label>
+                  </li>
+                {% else %}
+                  <li class="filter-group-display__list-item ">
+                    <label for="Filter-tag-{{ forloop.index }}" class="filter-checkbox-input-tag">
+                      <input
+                        type="checkbox"
+                        name="{{ tag }}"
+                        value="{{ tag }}"
+                        id="Filter-tag-{{ forloop.index }}"
+                      >
+                      {{ tag | capitalize | link_to_add_tag: val }}
+                    </label>
+                  </li>
+                {% endif %}
+              {%- endif -%}
+            {% endif %}
+          {%- endfor -%}
+        </ul>
+      </div>
+    </details>
+  {%- endif -%}
+
+  {% comment %} Product Type {% endcomment %}
+  {%- if filter_titles contains 'type' -%}
+    <details class="filter-group facets__disclosure-vertical" open>
+      <summary class="filter-group-summary facets__summary caption-large focus-offset">
+        <div>
+          {% assign active_type_tags_count = 0 %}
+          {%- for val in current_tags -%}
+              {% if val contains 'filter' and val contains "type" %}
+                {% assign active_type_tags_count = active_type_tags_count | plus: 1 %}
+              {% endif %}
+  
+          {%- endfor -%}
+          <span>Product Type (tags) ({{ active_type_tags_count }})</span>
+
+          {% render 'icon-caret' %}
+        </div>
+      </summary>
+
+      <div class="filter-group-display">
+        <ul class="filter-group-display__list list-unstyled">
+          {% for val in collection.all_tags %}
+            {% assign tags = val | split: '#' %}
+            {% if tags.first == 'filter' %}
+              {% assign tag_item = tags[1] | split: '_' %}
+              {%- if tag_item[0] == 'type' -%}
+                {% assign tag = tag_item[1] %}
+                {% if current_tags contains val %}
+                  <li class="filter-group-display__list-item ">
+                    <label for="Filter-tag-{{ forloop.index }}" class="filter-checkbox-input-tag">
+                      <input
+                        type="checkbox"
+                        name="{{ tag }}"
+                        value="{{ tag }}"
+                        id="Filter-tag-{{ forloop.index }}"
+                        {% if current_tags contains val -%}
+                          checked
+                        {%- endif %}
+                      >
+                      {{ tag | capitalize | link_to_remove_tag: val }}
+                    </label>
+                  </li>
+                {% else %}
+                  <li class="filter-group-display__list-item ">
+                    <label for="Filter-tag-{{ forloop.index }}" class="filter-checkbox-input-tag">
+                      <input
+                        type="checkbox"
+                        name="{{ tag }}"
+                        value="{{ tag }}"
+                        id="Filter-tag-{{ forloop.index }}"
+                      >
+                      {{ tag | capitalize | link_to_add_tag: val }}
+                    </label>
+                  </li>
+                {% endif %}
+              {%- endif -%}
+            {% endif %}
+          {%- endfor -%}
+        </ul>
+      </div>
+    </details>
+  {%- endif -%}
+
+  {% comment %} Prices {% endcomment %}
+  {%- if filter_titles contains 'price' -%}
+    <details class="filter-group facets__disclosure-vertical" open>
+      <summary class="filter-group-summary facets__summary caption-large focus-offset">
+        <div>
+          {% assign active_price_tags_count = 0 %}
+          {%- for val in current_tags -%}
+              {% if val contains 'filter' and val contains "price" %}
+                {% assign active_price_tags_count = active_price_tags_count | plus: 1 %}
+              {% endif %}
+  
+          {%- endfor -%}
+          <span>Prices (tags) ({{ active_price_tags_count }})</span>
+
+          {% render 'icon-caret' %}
+        </div>
+      </summary>
+
+      <div class="filter-group-display">
+        <ul class="filter-group-display__list list-unstyled">
+          {% for val in collection.all_tags %}
+            {% assign tags = val | split: '#' %}
+            {% if tags.first == 'filter' %}
+              {% assign tag_item = tags[1] | split: '_' %}
+              {%- if tag_item[0] == 'price' -%}
+                {% assign tag = tag_item[1] %}
+                {% if current_tags contains val %}
+                  <li class="filter-group-display__list-item ">
+                    <label for="Filter-tag-{{ forloop.index }}" class="filter-checkbox-input-tag">
+                      <input
+                        type="checkbox"
+                        name="{{ tag }}"
+                        value="{{ tag }}"
+                        id="Filter-tag-{{ forloop.index }}"
+                        {% if current_tags contains val -%}
+                          checked
+                        {%- endif %}
+                      >
+                      {% assign price_vals = tag | split: "-" %}
+                      {{ "$" | append: price_vals[0] | append: ' - $' | append: price_vals[1] | link_to_remove_tag: val }}
+                    </label>
+                  </li>
+                {% else %}
+                  <li class="filter-group-display__list-item ">
+                    <label for="Filter-tag-{{ forloop.index }}" class="filter-checkbox-input-tag">
+                      <input
+                        type="checkbox"
+                        name="{{ tag }}"
+                        value="{{ tag }}"
+                        id="Filter-tag-{{ forloop.index }}"
+                      >
+                      {% assign price_vals = tag | split: "-" %}
+                      {{ "$" | append: price_vals[0] | append: ' - $' | append: price_vals[1] | link_to_add_tag: val }}
+                    </label>
+                  </li>
+                {% endif %}
+              {%- endif -%}
+            {% endif %}
+          {%- endfor -%}
+        </ul>
+      </div>
+    </details>
+  {%- endif -%}
+
+  {% comment %} Availability {% endcomment %}
+  {% comment %} <details class="filter-group facets__disclosure-vertical" open>
+    <summary class="filter-group-summary facets__summary caption-large focus-offset">
+      <div>
+        {% assign active_tags_count = 0 %}
+        {%- for val in current_tags -%}
+            {% unless val contains 'filter' %}
+                {% assign active_tags_count = active_tags_count | plus: 1 %}
+            {% endunless %}
+
+        {%- endfor -%}
+        <span>Availability ({{ active_tags_count }})</span>
+        {% render 'icon-caret' %}
+      </div>
+    </summary>
+
+    {% assign inStock = 0 %}
+    {% assign OutOfStock = 0 %}
+
+    {% for prod in collection.products %}
+      {% if prod.available == true %}
+        {% assign inStock = inStock | plus: 1 %}
+      {% else %}
+        {% assign OutOfStock = OutOfStock | plus: 1 %}
+      {% endif %}
+    {% endfor %}
+
+    <div class="filter-group-display">
+      <ul class="filter-group-display__list list-unstyled">
+        {% comment %} In Stock  {% endcomment %}
+        {% if current_tags contains "in-stock" %}
+          <li class="filter-group-display__list-item ">
+            <label for="Filter-tag-in-stock" class="filter-checkbox-input-tag">
+              <input
+                type="checkbox"
+                name="in-stock"
+                value="in-stock"
+                id="Filter-tag-in-stock"
+                {% if current_tags contains "in-stock" -%}
+                  checked
+                {%- endif %}
+              >
+              {{ "In Stock (" | append: inStock | append: ")" | capitalize | link_to_remove_tag: "in-stock" }}
+            </label>
+          </li>
+        {% else %}
+          <li class="filter-group-display__list-item ">
+            <label for="Filter-tag-in-stock" class="filter-checkbox-input-tag">
+              <input
+                type="checkbox"
+                name="in-stock"
+                value="in-stock"
+                id="Filter-tag-in-stock"
+                {% if current_tags contains "in-stock" -%}
+                  checked
+                {%- endif %}
+              >
+              {{ "In Stock (" | append: inStock | append: ")" | capitalize | link_to_add_tag: "in-stock" }}
+            </label>
+          </li>
+        {% endif %}
+        {% comment %} Out of stock  {% endcomment %}
+        {% if current_tags contains "out-of-stock" %}
+          <li class="filter-group-display__list-item ">
+            <label for="Filter-tag-out-of-stock" class="filter-checkbox-input-tag">
+              <input
+                type="checkbox"
+                name="out-of-stock"
+                value="out-of-stock"
+                id="Filter-tag-out-of-stock"
+                {% if current_tags contains "out-of-stock" -%}
+                  checked
+                {%- endif %}
+              >
+              {{ "Out Of Stock (" | append: OutOfStock | append: ")" | capitalize | link_to_remove_tag: "out-of-stock" }}
+            </label>
+          </li>
+        {% else %}
+          <li class="filter-group-display__list-item ">
+            <label for="Filter-tag-out-of-stock" class="filter-checkbox-input-tag">
+              <input
+                type="checkbox"
+                name="out-of-stock"
+                value="out-of-stock"
+                id="Filter-tag-out-of-stock"
+                {% if current_tags contains "out-of-stock" -%}
+                  checked
+                {%- endif %}
+              >
+              {{ "Out Of Stock (" | append: OutOfStock | append: ")" | capitalize | link_to_add_tag: "out-of-stock" }}
+            </label>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </details> {% endcomment %}
+{% endif %}
